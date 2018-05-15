@@ -1,0 +1,368 @@
+---
+title: ' A tutorial on slurm system and rslurm'
+author: "Javad Rahimikollu,Kayhan Batmanghelich"
+date: "`r format(Sys.time(), '%B %d, %Y, %R')`"
+output:
+  pdf_document:
+    toc: true
+    toc_depth: 3
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = '/pylon5/ms4s88p/javad/DataScienceCourse/LearningSlurm')
+library(pander)
+library(png)
+```
+
+
+
+# Introduction
+
+Simple Linux Utility for Resource Management(Slurm) is an open source job scheduling system for large 
+
+and small Linux clusters. Slurm has three key functions:
+
+* It allows access to resources (compute nodes) based on certain criteria and parametrs for users to 
+
+perform computations.
+
+* It ensbles users with a framework for starting, executing, and monitoring work on a group of 
+
+assigned compute nodes. 
+
+* It manages high number of access requests to compute nodes  by assigning them in a queue. 
+
+In slurm cluster systems, user first sign in to the head node and using and request access to 
+
+computing nodes based on job parameters. Here is the list of some of these parameters:
+
+```{r reading options}
+Slurm_Options<-read.table("Slurm_Options.csv",header = TRUE, sep=",")
+pander(Slurm_Options)
+
+```
+## Slurm Architecture
+The slurm consits of head nodes and compute nodes. The head nodes are the nodes user signs in and is not meant for any computation. The head node is concted to slurm job distribution system. When user request a node from compute nodes, slurm looks for available compute nodes based on the paramters of the job. If the compute node is available a compute node will be assigned other wise the job will be in the queue.
+
+
+![The slurm structure](/pylon5/ms4s88p/javad/DataScienceCourse/LearningSlurm/imgs/cluster_diagram.png)
+
+
+## Slurm commands
+
+**sbatch**: To submit the slurm job, one can create a bash script with all the paramters and use **sbatch** command to submit the job. Here is an example of a batch script. If we name this bash scipt as test.sh, we can use sbatch test.sh to submit this job to run Test.R. Here is the example of a very simple batch script which runs the Test.R rscript. Test.R only print *Hi slurm*.
+
+This is the rscript Test.R
+```{r}
+print("Hi slurm")
+```
+
+```
+!/bin/bash 
+#SBATCH - N 1    
+#SBATCH -t 00:20:00 
+#SBATCH -J my_job   
+#SBATCH --mem 10GB
+
+Rscript ~/Test.R 
+```
+ 
+```
+sbatch submit_test.sh
+```
+submits the *submit.sh* bash script.
+**squeue**: When the user wants to see the status of the job and whether it is in the queue or it in the compute node.
+```
+squeue -u javad
+```
+We want to see the status jobs for user javad
+
+**scancel**: When the user want to cancel a job
+```
+scancel 1345
+```
+we want to cancel the job with id of $1345$
+#Submit Slurm Job
+
+
+
+# Rslurm
+
+Lets assume, we want to submit a rscript with iterative argument. Using the bash script we have to submit one job for each setting of argument which will need bash programming to enumerate all the values of argument. The rslurm package facilitates the process of distributing this type of calculation over computing nodes in the Slurm workload manager. The main function, slurm_apply, automatically splits the computation across multiple nodes and writes the submission scripts. It also includes functions to retrieve and combine the output from different nodes, as well as wrappers for common Slurm commands.
+
+
+## Basic Example
+
+Lets say our task is to find $E(x^2sin(x*\pi))$ where $x \sim N(0,1)$.
+**Naive way**The super naive way of doing this is to create an r script and do all the sampling and submit the job. This is naive becuase we are doing all the calculations in one core. Lets assume we want to draw $10^6$ sample and calculte the expected value. This script is created as *naive_Expected_value*.
+
+
+```{r}
+start<-Sys.time()
+samp <- rnorm(10^6, 0, 1)
+
+E<-samp^2*sin(samp*pi/8)
+
+mean(E)
+var(E)
+
+stop<-Sys.time()
+
+stop-start
+
+```
+Lets do the process for $10^5$ samples:
+
+```{r}
+start<-Sys.time()
+samp <- rnorm(10^5, 0, 1)
+
+E<-samp^2*sin(samp*pi/8)
+
+mean(E)
+var(E)
+
+stop<-Sys.time()
+
+stop-start
+
+```
+We see that the time difference is considerable. 
+*Using Bash Scripts*:The result above, leads us to the next solution, we can crate an executable rscript and run 10 of $10^5$ sample in parallel in defferent cpus. The execuatable rscript can be created as follows:
+
+```{r}
+#!/usr/bin/env Rscript
+library(docopt)
+
+'Usage:
+   Expected_value_chuncks.R [-i <i>]
+
+Options:
+   -i Chunck Number [default: 1]
+   
+ ]' -> doc
+
+
+opts <- docopt(doc)
+
+i<-opts$i
+
+
+samp <- rnorm(10^5, 0, 1)
+
+E<-samp^2*sin(samp*pi/8)
+
+mean(E)
+var(E)
+
+file_name<-paste0("chunk_",i,".csv")
+write.table(cbind(i,mean(E)),file=file_name)
+
+```
+
+The *#!/usr/bin/env Rscript* is an indicator of executable rscript for the linux system. The argument *i* is the chunck number of the sampling. The mean of sample from  chunk number $i$ will be written in to a file name *chunk_i.csv* we can run this r script in linux environment as follows:
+
+```{bash}
+./Expected_value_chuncks.R 1
+
+```
+
+Inorder to submit this job interavtively we can write the sbatch script as follows:
+
+```
+#!/bin/bash
+#SBATCH -t 1:00:00
+#SBATCH --job-name="chunck${$1}"
+#SBATCH --output="chunck${$1}".out
+#SBATCH -n 2
+#SBATCH --mem=10GB
+echo "SLURM_JOBID="\\$SLURM_JOBID
+echo "SLURM_JOB_NODELIST"=\\$SLURM_JOB_NODELIST
+echo "SLURM_NNODES"=\\$SLURM_NNODES
+echo "SLURMTMPDIR="\\$SLURMTMPDIR
+echo "working directory = /pghbio/dbmi/batmanlab/javad/MultiVariate/Bash/ "
+echo "$(ls)"
+
+STARTTIME=$(date +%s)
+
+ulimit -s unlimited
+# The initial srun will trigger the SLURM prologue on the compute nodes.
+echo "Launch script for javad@pitt.edu"
+module load R/3.4.1-mkl
+
+Rscript ./Expected_value_chuncks $1
+
+
+
+
+
+
+ENDTIME=$(date +%s)
+ELAPSED=$(($ENDTIME - $STARTTIME))
+
+echo "Execution duration: $((ELAPSED/3600))h:$(((ELAPSED/60)%60))m:$((ELAPSED%60))s"
+echo "Usage statistics for [$SLURM_JOB_ID]:"
+
+
+echo "All Done!"
+
+
+
+
+
+```
+This is an executable bash script which takes the first argument *$1* as the chunck number  and submit the job. Inodered to submit this job iteratively we should have anothe bash script with a for loop to iteratively submit the job.
+
+
+```{bash}
+
+#!/bin/bash
+
+for i in {1..10}
+do
+sbatch Single_Job.sh $i
+done
+
+echo "All Done!"
+
+
+```
+Now lets read the *.csv* files from each chunck.
+
+
+```{r}
+
+data1<-read.csv(file ="chunk_1.csv",stringsAsFactors=FALSE,sep="")
+data2<-read.csv(file ="chunk_2.csv",stringsAsFactors=FALSE,sep="")
+data3<-read.csv(file ="chunk_3.csv",stringsAsFactors=FALSE,sep="")
+data4<-read.csv(file ="chunk_4.csv",stringsAsFactors=FALSE,sep="")
+data5<-read.csv(file ="chunk_5.csv",stringsAsFactors=FALSE,sep="")
+data6<-read.csv(file ="chunk_6.csv",stringsAsFactors=FALSE,sep="")
+data7<-read.csv(file ="chunk_7.csv",stringsAsFactors=FALSE,sep="")
+data8<-read.csv(file ="chunk_8.csv",stringsAsFactors=FALSE,sep="")
+data9<-read.csv(file ="chunk_9.csv",stringsAsFactors=FALSE,sep="")
+data10<-read.csv(file ="chunk_10.csv",stringsAsFactors=FALSE,sep="")
+
+
+Data<-rbind(data1,data2,data3,data4,data5,data6,data7,data8,data9,data10)
+
+
+print(Data)
+
+```
+We can get the mean of the 10 chuncks as approximation for expected value.
+```{r}
+
+mean(Data$i)
+```
+Now, lets use rslurm for this problem, the equvalent of rscript *Expected_value_chunks.R* is a function *test_func*.
+```{r test_func}
+test_func <- function(chunk_num) {
+    .libPaths(c("/home/javad/R/x86_64-pc-linux-gnu-library/3.4","/opt/packages/R/3.4.1-mkl/lib64/R/library","/usr/lib64/R/library","/usr/share/R/library"))
+    samp <- rnorm(10^5, 0, 1)
+    E<-samp^2*sin(samp*pi/8)
+    mean(E)
+   
+}
+
+```
+
+To pass the different values of arguments *chunk_num*  we store them in a dataframe. 
+
+```{r parameters}
+
+pars <- data.frame(chunk_num = 1:10)
+head(pars, 3)
+
+```
+
+Now, we can treat the *test_func* as the rscript which will use the *pars dataframe* and submit the job for each row *pars dataframe* using *slurm_apply*. 
+
+```{r}
+library(rslurm)
+sjob <- slurm_apply(test_func, pars, jobname = 'test_apply',nodes = 10, cpus_per_node = 2, submit = TRUE)
+```
+
+
+on the background, slurm_apply will create a submit script with the job options provided in the function argument.i.e nodes and etc. Folders with the name of *results_node_indicator.RDS* file for each node. As we can see below there are two folders with the name of *results_0.RDS* and *results_1.RDS* for *N=2* nodes. 
+
+Now, we can use *get_slurm_out* to get the output for the each row of *par* dataframe on the *test_func* function. As we can see from *res* data.frame we have 10 rows, each row for each run.
+
+```{r}
+
+res <- get_slurm_out(sjob, outtype = 'table')
+res
+
+```
+So we can get the estimated expected value from *rslurm* results.
+
+```{r}
+
+mean(res$V1)
+```
+
+using *rslurm*, we avoid using the the extra bash files to submit the job. 
+
+
+
+## Machine Learning Example
+
+Support vector machines are one of the techniques which widely used in machine learning. Lets assume that we want to find the hyperamters of RBF kernels,$\sigma$ and $C$. In this section we want to performa a grid search using rslurm. 
+
+First lets define the *par* data frame for this problem. 
+```{r}
+
+pars <- data.frame(par_cost = 0.1:1,
+                   par_sigma = seq(0.1, 1, length.out = 10))
+head(pars, 3)
+
+
+```
+
+Now lets define our main function to fit the data:
+
+```{r}
+svm_func<-function(par_cost,par_sigma){
+set.seed(7);
+library(datasets)
+library(e1071)
+data("iris")
+  #Randomly shuffle the data
+iris<-iris[sample(nrow(iris)),]
+#Create 10 equally size folds
+folds <- cut(seq(1,nrow(iris)),breaks=10,labels=FALSE)
+#Perform 10 fold cross validation
+err<-numeric()
+for(i in 1:10){
+  #Segement your data by fold using the which() function 
+  testIndexes <- which(folds==i,arr.ind=TRUE)
+  testData <- iris[testIndexes, ]
+  trainData <- iris[-testIndexes, ]
+  #Use the test and train data partitions however you desire...
+  svp <- ksvm(trainData$ Sepal.Length,trainData$Sepal.Width,C=par_cost,nu=0.2,kpar=list(sigma=par_sigma),kernel='rbfdot',scaled=c())
+  err[i]=sum((testData$Sepal.Width-predict(svp,testData$Sepal.Length))^2)
+}
+
+  mean(err)
+  
+}
+
+
+```
+
+
+```{r}
+library(rslurm)
+svmjob <- slurm_apply(svm_func, pars, jobname = 'SVM',nodes = 10, cpus_per_node = 2, submit = TRUE)
+```
+
+```{r}
+res <- get_slurm_out(svmjob, outtype = 'table')
+cbind(res,pars)
+
+```
+# Practice problem
+
+We have seen the hyperparameter optimization for values of $c$ and $\sigma$. Can you perform the same concept on the blocks of $C$ and $\sigma$?(each job gets a block of $sigma$ and $c$ to explore).**hint: the block number is the function argument**

@@ -1,11 +1,5 @@
-Warning message:
+Error: package or namespace load failed for ‘pander’ in loadNamespace(j <- i[[1L]], c(lib.loc, .libPaths()), versionCheck = vI[[j]]):
+ there is no package called ‘Rcpp’
+In addition: Warning message:
 package ‘pander’ was built under R version 3.4.1 
-Warning message:
-package ‘png’ was built under R version 3.4.2 
-Warning message:
-package ‘docopt’ was built under R version 3.4.1 
-Warning message:
-package ‘rslurm’ was built under R version 3.4.1 
-Warning message:
-In mclapply(seq_len(n), do_one, mc.preschedule = mc.preschedule,  :
-  all scheduled cores encountered errors in user code
+Execution halted
