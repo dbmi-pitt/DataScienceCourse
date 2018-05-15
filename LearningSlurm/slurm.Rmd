@@ -4,8 +4,12 @@ author: "Javad Rahimikollu,Kayhan Batmanghelich"
 date: "`r format(Sys.time(), '%B %d, %Y, %R')`"
 output:
   pdf_document:
-    toc: true
+    toc: yes
     toc_depth: 3
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_depth: '3'
 ---
 
 
@@ -73,18 +77,19 @@ Rscript ~/Test.R
 sbatch submit_test.sh
 ```
 submits the *submit.sh* bash script.
+
 **squeue**: When the user wants to see the status of the job and whether it is in the queue or it in the compute node.
-```
-squeue -u javad
-```
+
+**squeue -u javad**
+
 We want to see the status jobs for user javad
 
 **scancel**: When the user want to cancel a job
-```
-scancel 1345
-```
+
+**scancel 1345**
+
 we want to cancel the job with id of $1345$
-#Submit Slurm Job
+
 
 
 
@@ -96,7 +101,8 @@ Lets assume, we want to submit a rscript with iterative argument. Using the bash
 ## Basic Example
 
 Lets say our task is to find $E(x^2sin(x*\pi))$ where $x \sim N(0,1)$.
-**Naive way**The super naive way of doing this is to create an r script and do all the sampling and submit the job. This is naive becuase we are doing all the calculations in one core. Lets assume we want to draw $10^6$ sample and calculte the expected value. This script is created as *naive_Expected_value*.
+
+**The  naive way**The super naive way of doing this is to create an r script and do all the sampling and submit the job. This is naive becuase we are doing all the calculations in one core. Lets assume we want to draw $10^6$ sample and calculte the expected value. This script is created as *naive_Expected_value*.
 
 
 ```{r}
@@ -309,13 +315,13 @@ using *rslurm*, we avoid using the the extra bash files to submit the job.
 
 ## Machine Learning Example
 
-Support vector machines are one of the techniques which widely used in machine learning. Lets assume that we want to find the hyperamters of RBF kernels,$\sigma$ and $C$. In this section we want to performa a grid search using rslurm. 
+Support vector machines are one of the techniques which widely used in machine learning. Lets assume that we want to find the hyperamters of RBF kernels,$\sigma$ and $C$. In this section we want to performa a grid search using rslurm. we are going to use *iris* data to fit *Sepal.Width* from *Sepal.length*.
 
 First lets define the *par* data frame for this problem. 
 ```{r}
 
-pars <- data.frame(par_cost = 0.1:1,
-                   par_sigma = seq(0.1, 1, length.out = 10))
+pars <- data.frame(par_cost = seq(0.1,1,0.1),
+                   par_sigma = seq(0.1, 1,0.1))
 head(pars, 3)
 
 
@@ -352,14 +358,16 @@ for(i in 1:10){
 
 ```
 
+Rslurm has module issues, to overcome that problem we can write the slurm_apply function without submiting it.
+In the _rslurm_job_object, add the module into the *submit.sh* script.
 
 ```{r}
 library(rslurm)
-svmjob <- slurm_apply(svm_func, pars, jobname = 'SVM',nodes = 10, cpus_per_node = 2, submit = TRUE)
+SVM <- slurm_apply(svm_func, pars, jobname = 'SVM',nodes = 10, cpus_per_node = 2, submit = FALSE)
 ```
-
+For example for the SVM job, we went to the folder *_rslurm_SVM* and add the **module load R/3.4.1-mkl** into the *submit.sh*
 ```{r}
-res <- get_slurm_out(svmjob, outtype = 'table')
+res <- get_slurm_out(SVM, outtype = 'table')
 cbind(res,pars)
 
 ```

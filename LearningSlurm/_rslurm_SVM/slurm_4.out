@@ -1,5 +1,2 @@
-Error: package or namespace load failed for ‘pander’ in loadNamespace(j <- i[[1L]], c(lib.loc, .libPaths()), versionCheck = vI[[j]]):
- there is no package called ‘Rcpp’
-In addition: Warning message:
-package ‘pander’ was built under R version 3.4.1 
-Execution halted
+Warning message:
+package ‘png’ was built under R version 3.4.2 
