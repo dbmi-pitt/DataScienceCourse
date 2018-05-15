@@ -1,0 +1,8 @@
+﻿option,Description
+-j, jobname
+-t,Walltime requested  HH:MM:SS
+-p,Partition
+-N,Number of Nodes
+-A,Account or Group Name
+--mem,Requeted Memory in GB
+--ntasks-per-node,Number of cores to allocate per node
