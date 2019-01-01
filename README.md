@@ -1,2 +1,2 @@
 # DataScienceCourse
-[**Update**:] Update to this repo stoped until the course is fully developed. 
+[**Update**:] We will move the material from a private repo to this public repo when the course is fully developed.
