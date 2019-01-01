@@ -1,2 +1,2 @@
 # DataScienceCourse
-Jupiter material for Data Science
+[**Update**:] Update to this repo stoped until the course is fully developed. 
