@@ -37,7 +37,13 @@ To use this notebook, you should
 
 ## Learning Slurm
 
-*TBD*
+The LearningSlurm directory contains as PDF entitled `rslurm-tutorial.pdf`, which provides an walkthrough of the basic steps involved in using (Slurm)[https://slurm.schedmd.com/] to control a computing cluster. 
+
+The PDF file is generated from the `slurm.Rmd` [R markdown](https://rmarkdown.rstudio.com/) file. 
+
+To modify the PDF file, you will have to start by revising `slurm.Rmd`. This file contains several pointers to paths and libraries that will be specific to the environment in which the code is executed. Modify the file as needed to fit your specific environment. Careful testing is highly recommended.
+
+Once you are done with any revisions, you can follow [published instructions to convert the Markdown to PDF or HTML](https://rmarkdown.rstudio.com/articles_intro.html).
 
 # Description
 
