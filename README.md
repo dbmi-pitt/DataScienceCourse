@@ -13,7 +13,32 @@ Data science modules developed by the University of Pittsburgh Biomedical Inform
 =======
 # Using the module
 
+## Image Segmentation
+
+Image Segmentation is a Python (Jupyter)[https://jupyter.org/] notebook, relying on various external libraries, which must be installed:
+
+* [NumPy](http://www.numpy.org/), n-dimensional arrays for Python, and related [SciPy](https://scipy.org/scipylib/index.html) scientific computing library.
+* [NiBabel](https://nipy.org/nibabel/): for neuro-imaging
+* [Pandas](https://pandas.pydata.org/): Python Data Analysis Library
+* [SimpleITK](http://www.simpleitk.org/): Python version of the Insight Segmentation and Registration Toolkit (ITK) 
+* [Matplotlib](https://matplotlib.org/): Python plotting
+* [scikit-image](https://scikit-image.org/): image processing algorithms
+* [Keras](https://keras.io/): Python Deep Learning library
+
+To use this notebook, you should
+
+1. Install [Python](https://www.python.org), preferably newer versions. Some people prefer [Conda](https://conda.io/projects/conda/en/latest/#). 
+
+2. Configure support for (Jupyter)[https://jupyter.org] notebooks
+
+3. Install the modules listed above.
+
+4. Run the '3D segmentation.ipynb` notebook in Jupyter
+
+## Learning Slurm
+
 *TBD*
+
 
 ======
 # Description
