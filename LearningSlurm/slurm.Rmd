@@ -95,7 +95,7 @@ we want to cancel the job with id of $1345$
 
 # Rslurm
 
-Lets assume, we want to submit a rscript with iterative argument. Using the bash script we have to submit one job for each setting of argument which will need bash programming to enumerate all the values of argument. The rslurm package facilitates the process of distributing this type of calculation over computing nodes in the Slurm workload manager. The main function, slurm_apply, automatically splits the computation across multiple nodes and writes the submission scripts. It also includes functions to retrieve and combine the output from different nodes, as well as wrappers for common Slurm commands.
+Let's assume we want to submit a rscript with an iterative argument. Using the bash script we have to submit one job for each setting of the argument. The rslurm package facilitates the process of distributing this type of calculation over computing nodes in the Slurm workload manager. The main function, slurm_apply, automatically splits the computation across multiple nodes and writes the submission scripts. It also includes functions to retrieve and combine the output from different nodes, as well as wrappers for common Slurm commands.
 
 
 ## Basic Example
@@ -175,7 +175,7 @@ The *#!/usr/bin/env Rscript* is an indicator of executable rscript for the linux
 
 ```
 
-Inorder to submit this job interavtively we can write the sbatch script as follows:
+Inorder to submit this job interactively we can write the sbatch script as follows:
 
 ```
 #!/bin/bash
@@ -219,7 +219,7 @@ echo "All Done!"
 
 
 ```
-This is an executable bash script which takes the first argument *$1* as the chunck number  and submit the job. Inodered to submit this job iteratively we should have anothe bash script with a for loop to iteratively submit the job.
+This is an executable bash script which takes the first argument *$1* as the chunck number  and submits the job. In oder to submit this job iteratively we should have another bash script with a for loop to  submit the job.
 
 
 ```{bash}
