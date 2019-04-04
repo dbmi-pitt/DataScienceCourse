@@ -10,7 +10,6 @@ This repository contains two distinct modules illustrating key concepts in biome
 
 Data science modules developed by the University of Pittsburgh Biomedical Informatics Training Program with the support of the National Library of Medicine data science supplement to the University of Pittsburgh (Grant # T15LM007059-30S1). 
 
-=======
 
 # Using the module
 
@@ -40,8 +39,6 @@ To use this notebook, you should
 
 *TBD*
 
-
-=======
 # Description
 
 ## 1. Learning Outcomes
