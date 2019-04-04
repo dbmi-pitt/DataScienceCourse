@@ -33,14 +33,14 @@ To use this notebook, you should
 
 3. Install the modules listed above.
 
-4. Run the '3D segmentation.ipynb` notebook in Jupyter
+4. Run the `3D segmentation.ipynb` notebook in Jupyter
 
 ## Learning Slurm
 
 *TBD*
 
 
-======
+=======
 # Description
 
 ## 1. Learning Outcomes
