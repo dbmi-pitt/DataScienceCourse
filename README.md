@@ -49,7 +49,20 @@ Once you are done with any revisions, you can follow [published instructions to 
 
 ## 1. Learning Outcomes
 
-*TBD*
+### 1.1 Image Segmentation
+
+Upon completion of this module, students will be able to:
+
+* Use Python tools to load, process, display, and manipulate NIFTI images
+* Discuss the basic structure of the [3D U-Net](https://lmb.informatik.uni-freiburg.de/Publications/2016/CABR16/) neural network model. 
+* Understand how to use Keras to train and apply the 3D U-Net model to segment images.
+
+### 1.2 Learning Slurm
+
+Upon completion of this module, students will be able to:
+* Decide when Slurm might be useful for addressing computing challenges
+* Create appropriate Slurm batch files
+* Write code capable of maximizing the utility of Slurm processing. 
 
 ## 2. Licensing/Restrictions/Access
 
@@ -57,46 +70,67 @@ This work is licensed under a [Creative Commons Attribution-NonCommercial 4.0 In
 
 ## 3. Target Student Audience
 
-Graduate students. 
+Graduate students 
 
 ## 4. Prerequisite Skills and Knowledge Required
 
-*TBD*
+* Basic understanding of Python coding and R Scripting
+* Some familiarity with image formats, particularly NIFTI images
+* Basic familiaritiy with machine learning principles
 
 ## 5. Domain Problem
 
-*TBD*
+* *Image Segmentation*: Extracting segmentation information from 3D lung NIFTII images
+
+* *LearningSlurm*: using Slurm to run jobs on computing clusters
 
 ## 6. Dataset for the case study
 
-*TBD*
+* *Image Segmentation*: Included lung NIFTI images
+
+* *LearningSlurm*: not applicable
 
 ## 7. Skills to be taught
 
 ### 7.1. Knowledge representation
 
-*TBD*
+Not applicable
 
 ### 7.2. Computation
 
-*TBD*
+* Loading NIFTI images
+* Processing NIFTI images
+* Converting NIFTI image into NumPy arrays
+* Displaying NIFTI images. 
+* Using Keras to train 3D U-Net models for image segmentation. 
+* Evaluating results of segmentation accuracy
+* Using segmentation models on held-out images
+* Understanding Slurm basic concepts
+* Writing Slurm batch files
+
 
 ### 7.3. Visual Analytics
 
-*TBD*
+* Displaying NIFTI images
 
 ### 7.4. Statistical Analyses
 
-*TBD*
+* Accuracy of segmentation algorithms
+* Inference on held-out images
 
 ### 7.5. Reproducibility
 
-*TBD*
+* Jupyter notebooks
 
 ## 8. Problem Solving skills 
 
-*TBD*
+* Where does image segmentation work well and where does it fail? 
+* How can results of 3D segementation best be interpreted?
+* How can Slurm jobs be managed most effectively?
 
 ## 9. Reflection
 
-*TBD*
+* What are some of the challenges of handling images from different sources? 
+* What can be done if images are not well-aligned? Is this a problem?
+* How can segmentation models be best evaluated? 
+
