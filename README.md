@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/164016740.svg)](https://zenodo.org/badge/latestdoi/164016740)
+
 # Image Segmentation and Slurm
 
 This repository contains two distinct modules illustrating key concepts in biomedical data science:
